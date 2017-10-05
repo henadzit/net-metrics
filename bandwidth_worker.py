@@ -30,12 +30,12 @@ def main():
         time.sleep(INTERVAL)
         p.terminate()
 
-        size = os.path.getsize(filename)
+        size = _file_size(filename)
         bandwidth = size / INTERVAL
         print('bandwidth={}'.format(bandwidth))
         g.send('time', bandwidth)
 
-        os.remove(filename)
+        _remove(filename)
 
         end = time.time()
         if end - start < PERIOD:
@@ -44,6 +44,21 @@ def main():
 
 def _download(download_url, filename):
     urllib.urlretrieve(download_url, filename)
+
+
+def _file_size(filename):
+    try:
+        return os.path.getsize(filename)
+    except OSError:
+        print('failed to get file size filename={}'.format(filename))
+        return 0
+
+
+def _remove(filename):
+    try:
+        os.remove(filename)
+    except OSError:
+        print('failed to remove file filename={}'.format(filename))
 
 
 if __name__ == '__main__':
