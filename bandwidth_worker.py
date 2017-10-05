@@ -1,5 +1,6 @@
 import multiprocessing
 import os
+import sys
 import urllib
 import random
 import time
@@ -7,14 +8,13 @@ import time
 import graphitesend
 
 
-# pick something in close proximity
-DOWNLOAD_URL = 'http://ftp.byfly.by/debian-cd/9.1.0/i386/iso-dvd/debian-9.1.0-i386-DVD-1.iso'
 INTERVAL = 3.0
 PERIOD = 10.0
 
 
 def main():
-    print('Starting download_url={}'.format(DOWNLOAD_URL))
+    download_url = sys.argv[1]
+    print('Starting download_url={}'.format(download_url))
 
     print('Init graphitesend')
     g = graphitesend.init(graphite_server=os.environ['GRAPHITE_SERVER'],
@@ -25,7 +25,7 @@ def main():
         start = time.time()
 
         filename = 'download{0:07d}'.format(random.randint(0, 1000000))
-        p = multiprocessing.Process(target=_download, args=(filename,))
+        p = multiprocessing.Process(target=_download, args=(download_url, filename))
         p.start()
         time.sleep(INTERVAL)
         p.terminate()
@@ -42,8 +42,8 @@ def main():
             time.sleep(PERIOD - end + start)
 
 
-def _download(filename):
-    urllib.urlretrieve(DOWNLOAD_URL, filename)
+def _download(download_url, filename):
+    urllib.urlretrieve(download_url, filename)
 
 
 if __name__ == '__main__':

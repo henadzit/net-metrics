@@ -27,7 +27,7 @@ def main():
             print('delay={}'.format(delay))
             g.send('time', delay)
         else:
-            print('delay is None')
+            print('timeout')
 
         end = time.time()
         if end - start < INTERVAL:
